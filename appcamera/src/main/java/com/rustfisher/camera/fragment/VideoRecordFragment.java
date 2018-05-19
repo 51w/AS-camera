@@ -19,7 +19,7 @@ import com.rustfisher.camera.view.CameraPreview;
  * Created by Rust on 2018/5/17.
  */
 public class VideoRecordFragment extends Fragment {
-    private static final String TAG = "rustAppVideoFrag";
+    private static final String TAG = "ESAppVideoFrag";
 
     private Button mCaptureBtn;
     private CameraPreview mCameraPreview;
@@ -78,7 +78,7 @@ public class VideoRecordFragment extends Fragment {
     private CameraPreview.OnDataListener mOnCameraDataListener = new CameraPreview.OnDataListener() {
         @Override
         public void onNV21(byte[] data, int width, int height) {
-            Log.d(TAG, "onNV21: " + data.length);
+//            Log.d(TAG, "onNV21: " + data.length);
         }
     };
 

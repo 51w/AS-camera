@@ -10,14 +10,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.es.ehuman.EHuman;
 import com.rustfisher.camera.fragment.VideoRecordFragment;
+
+import java.io.IOException;
 
 /**
  * 主界面
  * 在这申请相关权限
  */
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "rustAppMainAct";
+    private static final String TAG = "ESAppMainAct";
     private static final int REQUEST_VIDEO_PERMISSIONS = 1;
     private static final String[] VIDEO_PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -39,6 +42,17 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: requestPermissions");
             ActivityCompat.requestPermissions(this, VIDEO_PERMISSIONS, REQUEST_VIDEO_PERMISSIONS);
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EHuman.prepare(getApplicationContext());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "prepare: ", e);
+                }
+            }
+        }).start();
     }
 
     @Override

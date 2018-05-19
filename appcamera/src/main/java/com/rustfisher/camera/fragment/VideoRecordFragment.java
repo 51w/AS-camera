@@ -55,6 +55,7 @@ public class VideoRecordFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: 销毁预览");
+        mCameraPreview.setDataListener(null);
         mCameraPreview = null;
     }
 
@@ -69,9 +70,17 @@ public class VideoRecordFragment extends Fragment {
 
     private void initCameraPreview() {
         mCameraPreview = new CameraPreview(getContext());
+        mCameraPreview.setDataListener(mOnCameraDataListener);
         FrameLayout preview = mRoot.findViewById(R.id.camera_preview);
         preview.addView(mCameraPreview);
     }
+
+    private CameraPreview.OnDataListener mOnCameraDataListener = new CameraPreview.OnDataListener() {
+        @Override
+        public void onNV21(byte[] data, int width, int height) {
+            Log.d(TAG, "onNV21: " + data.length);
+        }
+    };
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override

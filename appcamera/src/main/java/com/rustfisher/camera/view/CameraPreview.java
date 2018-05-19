@@ -35,6 +35,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Uri outputMediaFileUri;
     private String outputMediaFileType;
 
+    private OnDataListener dataListener;
+
     public CameraPreview(Context context) {
         super(context);
         mHolder = getHolder();
@@ -49,6 +51,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.d(TAG, "camera is not available");
         }
         return c;
+    }
+
+    public void setDataListener(OnDataListener dataListener) {
+        this.dataListener = dataListener;
     }
 
     @Override
@@ -216,7 +222,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Camera.PreviewCallback mCameraPreviewCallback = new Camera.PreviewCallback() {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-            Log.d(TAG, "onPreviewFrame: data.length=" + data.length);
+//            Log.d(TAG, "onPreviewFrame: data.length=" + data.length);
+            if (null != dataListener) {
+                dataListener.onNV21(data, mOptVideoWidth, mOptVideoHeight);
+            }
         }
     };
+
+    public interface OnDataListener {
+        void onNV21(byte[] data, final int width, final int height);
+    }
 }

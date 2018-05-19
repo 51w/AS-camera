@@ -10,4 +10,4 @@ struct Object{
 
 int init_mobilenet(std::string fparam, std::string fbin);
 
-int detect_mobilenet(cv::Mat& raw_img, float show_threshold);
+int detect_mobilenet(cv::Mat& raw_img, std::vector<Object>& objects);

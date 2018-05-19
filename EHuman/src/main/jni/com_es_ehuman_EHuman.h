@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_es_ehuman_EHuman_nInitMobilenet
   (JNIEnv *, jclass, jstring, jstring);
 
+/*
+ * Class:     com_es_ehuman_EHuman
+ * Method:    nDetectHuman
+ * Signature: (Ljava/util/ArrayList;[BIIIZLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_es_ehuman_EHuman_nDetectHuman
+  (JNIEnv *, jclass, jobject, jbyteArray, jint, jint, jint, jboolean, jstring);
+
 #ifdef __cplusplus
 }
 #endif

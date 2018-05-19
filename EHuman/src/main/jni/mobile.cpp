@@ -17,7 +17,18 @@ int main(int argc, char** argv)
 		fprintf(stderr, "cv::imread failed\n");
 
 
-	detect_mobilenet(m, 0.5);
+	std::vector<Object> objects;
+	detect_mobilenet(m, objects);
+	
+	
+	for(int i = 0;i<objects.size();++i)
+    {
+        Object object = objects.at(i);
+        if(object.prob > 0.5 && object.class_id == 15)
+        {
+            cv::rectangle(m, object.rec, cv::Scalar(0, 0, 255));
+        }
+    }
 	
 	cv::imwrite("mobile.jpg",m);
 

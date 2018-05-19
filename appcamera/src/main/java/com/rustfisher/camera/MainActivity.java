@@ -3,6 +3,7 @@ package com.rustfisher.camera;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.es.ehuman.EHuman;
 import com.rustfisher.camera.fragment.VideoRecordFragment;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -47,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     EHuman.prepare(getApplicationContext());
-                } catch (IOException e) {
+//                    EHuman.prepareProto(EHuman.OUT_PROTO_DIR);
+                } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, "prepare: ", e);
                 }

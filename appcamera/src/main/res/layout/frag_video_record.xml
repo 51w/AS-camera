@@ -9,6 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.rustfisher.camera.view.ColorHintView
+        android:id="@+id/color_hint_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <Button
         android:id="@+id/capture_btn"
         android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+// javah com.es.ehuman.EHuman
 
 /**
  * ES human detect
@@ -20,6 +21,10 @@ public class EHuman {
 
     public static String mNCNNBinAbsPath;
     public static String mNCNNProtoAbsPath;
+
+    static {
+        System.loadLibrary("ehuman");
+    }
 
     /**
      * Copy files to app's dir
@@ -48,6 +53,8 @@ public class EHuman {
         }
         Log.d(TAG, "prepare: " + mNCNNBinAbsPath);
         Log.d(TAG, "prepare: " + mNCNNProtoAbsPath);
+        Log.d(TAG, "prepare: native init ncnn");
+        nInitMobilenet(mNCNNBinAbsPath, mNCNNProtoAbsPath);
         Log.d(TAG, "prepare: DONE");
     }
 
@@ -66,5 +73,7 @@ public class EHuman {
         Log.d(TAG, "prepare: " + file + " " + file.exists());
         return file.getAbsolutePath();
     }
+
+    public static native void nInitMobilenet(String binPath, String protoPath);
 
 }

@@ -52,14 +52,31 @@ JNIEXPORT void JNICALL Java_com_es_ehuman_EHuman_nDetectHuman
         cv::cvtColor(in_image_mat,t_frame,CV_YUV420sp2BGR);
         std::vector<Object> objects;
         LOGD(TAG, "detect_mobilenet start");
-        detect_mobilenet(t_frame, objects);
+        //detect_mobilenet(t_frame, objects);
+
+        cv::Rect res_cv_rect;
+        detect_track(t_frame, res_cv_rect);
         LOGD(TAG, "detect_mobilenet end");
 
         if(saveInput) {
             save_path_ptr = jstringToChar(env, savePath);
             cv::imwrite(save_path_ptr,t_frame);
         }
-
+        if(res_cv_rect.width == 0) {
+            // nothing found
+        } else {
+            jintArray res_arr;
+            res_arr = env->NewIntArray(4);
+            jint* res_ptr = env->GetIntArrayElements(res_arr,0);
+            res_ptr[0] = res_cv_rect.x;
+            res_ptr[1] = res_cv_rect.y;
+            res_ptr[2] = res_cv_rect.width;
+            res_ptr[3] = res_cv_rect.height;
+            env->SetIntArrayRegion(res_arr, 0, 4, res_ptr);
+            env->ReleaseIntArrayElements(res_arr, res_ptr, 0);
+            env->CallBooleanMethod(resArrayList, mid_add, res_arr);
+        }
+/*
         for(int i = 0;i<objects.size();++i)
         {
             Object object = objects.at(i);
@@ -77,4 +94,5 @@ JNIEXPORT void JNICALL Java_com_es_ehuman_EHuman_nDetectHuman
                 env->CallBooleanMethod(resArrayList, mid_add, res_arr);
             }
         }
+        */
   }

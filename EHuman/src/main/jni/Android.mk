@@ -12,7 +12,9 @@ OPENCV_LIB_TYPE:=STATIC
 
 include ${OPENCVROOT}/sdk/native/jni/OpenCV.mk
 
-LOCAL_SRC_FILES := mobilenet.cpp ehuman.cpp
+LOCAL_SRC_FILES := mobilenet.cpp \
+                    v20/fdssttracker.cpp v20/fhog.cpp v20/runtracker.cpp \
+                    ehuman.cpp
 
 LOCAL_CPPFLAGS += -fexceptions -frtti -fopenmp
 LOCAL_CFLAGS   += -fopenmp
@@ -24,6 +26,7 @@ LOCAL_LDFLAGS := $(LOCAL_PATH)/lib/$(TARGET_ARCH_ABI)/libncnn.a
 #LOCAL_LDFLAGS := $(LOCAL_PATH)/lib/libncnn.a  # v8
 
 LOCAL_C_INCLUDES +=$(LOCAL_PATH)/include
+LOCAL_C_INCLUDES +=$(LOCAL_PATH)/v20
 
 LOCAL_LDLIBS += -llog -ljnigraphics -fopenmp
 

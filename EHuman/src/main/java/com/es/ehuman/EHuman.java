@@ -112,7 +112,7 @@ public class EHuman {
 
     public synchronized static void detectHuman(final byte[] nv21, final int nv21Width, final int nv21Height) {
         if (mComputing || !mPrepareFinish) {
-//            Log.d(TAG, "skip this frame, busy...");
+            Log.d(TAG, "skip this frame, busy...");
             return;
         }
         mCalCount++;

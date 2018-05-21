@@ -108,6 +108,8 @@ public class EHuman {
 
     private static int mCalCount = 0;
 
+    private static byte[] mNv21 = new byte[1024]; // 计算用的数组
+
     public synchronized static void detectHuman(final byte[] nv21, final int nv21Width, final int nv21Height) {
         if (mComputing || !mPrepareFinish) {
 //            Log.d(TAG, "skip this frame, busy...");
@@ -115,11 +117,16 @@ public class EHuman {
         }
         mCalCount++;
         mComputing = true;
+        final int targetLen = nv21.length;
+        if (mNv21.length != targetLen) {
+            mNv21 = new byte[targetLen];
+        }
+        System.arraycopy(nv21, 0, mNv21, 0, targetLen);
         mCalHandler.post(new Runnable() {
             @Override
             public void run() {
                 ArrayList<int[]> resList = new ArrayList<>(); // 存储结果
-                nDetectHuman(resList, nv21.clone(), nv21.length, nv21Width, nv21Height, false,
+                nDetectHuman(resList, mNv21, targetLen, nv21Width, nv21Height, false,
                         new File(mPicDir, "p_" + mCalCount + ".jpg").getAbsolutePath());
 //                Log.d(TAG, String.format(Locale.CHINA, "%05d, detectHuman res==null? %b; nv21 [Wid,Height] = [%d, %d]",
 //                        mCalCount, (resList == null), nv21Width, nv21Height));

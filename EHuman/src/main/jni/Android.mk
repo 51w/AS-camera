@@ -19,7 +19,10 @@ LOCAL_CFLAGS   += -fopenmp
 LOCAL_CPPFLAGS += -fopenmp
 LOCAL_LDLIBS   += -fopenmp
 
-LOCAL_LDFLAGS := $(LOCAL_PATH)/lib/libncnn.a
+LOCAL_LDFLAGS := $(LOCAL_PATH)/lib/$(TARGET_ARCH_ABI)/libncnn.a
+#LOCAL_LDFLAGS := $(LOCAL_PATH)/lib/libncnn-armeabi-v7a.a   # v7
+#LOCAL_LDFLAGS := $(LOCAL_PATH)/lib/libncnn.a  # v8
+
 LOCAL_C_INCLUDES +=$(LOCAL_PATH)/include
 
 LOCAL_LDLIBS += -llog -ljnigraphics -fopenmp

@@ -151,10 +151,10 @@ int detect_track(cv::Mat& raw_img, cv::Rect& result)
             else
             {
                 Num_notcomp++;
-                if(Num_notfound >= 60)
+                if(Num_notfound >= 100)
                 {
                     Num_notfound = 0;
-                    //select_init = true;
+                    select_init = true;
                 }
             }
 		}

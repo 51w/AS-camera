@@ -96,7 +96,8 @@ public:
     virtual void init(const cv::Rect &roi, cv::Mat image);
 
     // Update position based on the new frame
-    virtual cv::Rect update(cv::Mat image);
+    // virtual cv::Rect update(cv::Mat image);
+    virtual cv::Rect update(cv::Mat image, bool &redetection);
 
     float interp_factor; // linear interpolation factor for adaptation
     float sigma; // gaussian kernel bandwidth
@@ -130,7 +131,8 @@ public:
     float min_scale_factor; // min scaling rate
     float max_scale_factor; // max scaling rate
     float scale_lambda; // regularization
-
+    float motion_thresh;
+	float appearance_thresh;
 
 protected:
     // Detect object in the current frame.
@@ -175,7 +177,8 @@ protected:
 	cv::Mat resizeDFT(const cv::Mat &A, int real_scales);
 
     // Detect the new scaling rate
-    cv::Point2i detect_scale(cv::Mat image);
+    // cv::Point2i detect_scale(cv::Mat image);
+    cv::Point2i detect_scale(cv::Mat image, float &peak_scale_value);
 
 	cv::Mat features_projection(const cv::Mat &src);
 

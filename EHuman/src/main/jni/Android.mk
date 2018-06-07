@@ -14,6 +14,7 @@ include ${OPENCVROOT}/sdk/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES := mobilenet.cpp \
                     v20/fdssttracker.cpp v20/fhog.cpp v20/runtracker.cpp \
+                    v20/lbp.cpp \
                     ehuman.cpp
 
 LOCAL_CPPFLAGS += -fexceptions -frtti -fopenmp

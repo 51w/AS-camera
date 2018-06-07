@@ -9,6 +9,7 @@
 
 cv::Rect initRect, result; 
 FDSSTTracker _tracker;
+//
 
 int Tracker_init(cv::Rect roi, cv::Mat image)
 {
@@ -26,10 +27,12 @@ int Tracker_init(cv::Rect roi, cv::Mat image)
 	return 0;
 }
 
-cv::Rect Tracker_update( cv::Mat image)
+cv::Rect Tracker_update( cv::Mat image, bool &g_bRedetection)
 {
 	//std::cout << "start Tracker" << std::endl;
-	result = _tracker.update(image);
+	bool tmp;
+	result = _tracker.update(image, tmp);
+	g_bRedetection = tmp;
 	//std::cout << "end Tracker" << std::endl;
 
 	return result;

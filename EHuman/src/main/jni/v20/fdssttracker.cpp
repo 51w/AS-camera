@@ -211,6 +211,10 @@ int FDSSTTracker::FDSSTTracker00(bool hog, bool fixed_window, bool multiscale, b
     //output_sigma_factor = 0.1;
     output_sigma_factor = 0.125;
 
+    //add by yuanpp threshold
+	motion_thresh=0.5;
+	appearance_thresh=0.5;
+
     if (hog) {    // HOG
         // VOT
         interp_factor = 0.015;
@@ -303,7 +307,7 @@ void FDSSTTracker::init(const cv::Rect &roi, cv::Mat image)
 }
 
 // Update position based on the new frame
-cv::Rect FDSSTTracker::update(cv::Mat image)
+cv::Rect FDSSTTracker::update(cv::Mat image, bool &redetection)
 {
     if (_roi.x + _roi.width <= 0) _roi.x = -_roi.width + 1;
     if (_roi.y + _roi.height <= 0) _roi.y = -_roi.height + 1;
@@ -314,10 +318,12 @@ cv::Rect FDSSTTracker::update(cv::Mat image)
     float cy = _roi.y + _roi.height / 2.0f;
 
     float peak_value;
+    float peak_scale_value;
 
 #ifdef PFS_DEBUG
 	double t_starte = clock();
 #endif
+    //cv::Point2f res = detect(getFeatures(image, 0, 1.0f), peak_value);
     cv::Point2f res = detect(getFeatures(image, 0, 1.0f), peak_value);
 #ifdef PFS_DEBUG
 	t_end = clock();
@@ -337,37 +343,54 @@ cv::Rect FDSSTTracker::update(cv::Mat image)
 #ifdef PFS_DEBUG
 	t_start = clock();
 #endif
-    cv::Point2i scale_pi = detect_scale(image);
+    //cv::Point2i scale_pi = detect_scale(image);
+    cv::Point2i scale_pi = detect_scale(image, peak_scale_value);
 #ifdef PFS_DEBUG
 	t_end = clock();
 	std::cout << "scale detction duration: " << (t_end - t_start) / CLOCKS_PER_SEC << "\n";
-#endif  
-	currentScaleFactor = currentScaleFactor * interp_scaleFactors[scale_pi.x];
-//	std::cout << currentScaleFactor<<"\n";
-    if(currentScaleFactor < min_scale_factor)
-      currentScaleFactor = min_scale_factor;
-    // else if(currentScaleFactor > max_scale_factor)
-    //   currentScaleFactor = max_scale_factor;
+#endif
 
-	update_roi();
+    if (peak_value < motion_thresh)
+	{
+		redetection = true;
+		//[pos, max_response]=refine_pos_rf(im, pos, svm_struct, app_model, config);
+	}
+	else
+		redetection = false;
 
-    train_scale(image);
+    if (!redetection)
+    {
 
-    if (_roi.x >= image.cols - 1) _roi.x = image.cols - 1;
-    if (_roi.y >= image.rows - 1) _roi.y = image.rows - 1;
-    if (_roi.x + _roi.width <= 0) _roi.x = -_roi.width + 2;
-    if (_roi.y + _roi.height <= 0) _roi.y = -_roi.height + 2;
+        currentScaleFactor = currentScaleFactor * interp_scaleFactors[scale_pi.x];
+        //	std::cout << currentScaleFactor<<"\n";
+        if(currentScaleFactor < min_scale_factor)
+          currentScaleFactor = min_scale_factor;
+        // else if(currentScaleFactor > max_scale_factor)
+        //   currentScaleFactor = max_scale_factor;
 
-    assert(_roi.width >= 0 && _roi.height >= 0);
-    cv::Mat x = getFeatures(image, 0);
-    train(x, interp_factor);
+        update_roi();
 
+        //train_scale(image);
+        if (peak_scale_value > appearance_thresh)
+        {
+            train_scale(image);
+        }//change end
 
+        if (_roi.x >= image.cols - 1) _roi.x = image.cols - 1;
+        if (_roi.y >= image.rows - 1) _roi.y = image.rows - 1;
+        if (_roi.x + _roi.width <= 0) _roi.x = -_roi.width + 2;
+        if (_roi.y + _roi.height <= 0) _roi.y = -_roi.height + 2;
+
+        assert(_roi.width >= 0 && _roi.height >= 0);
+        cv::Mat x = getFeatures(image, 0);
+        train(x, interp_factor);
+
+    }
     return _roi;
 }
 
 // Detect the new scaling rate
-cv::Point2i FDSSTTracker::detect_scale(cv::Mat image)
+cv::Point2i FDSSTTracker::detect_scale(cv::Mat image, float &peak_scale_value)
 {
 //std::cout << "*****Update scale 3*****" << std::endl;
   cv::Mat xsf = FDSSTTracker::get_scale_sample(image);
@@ -390,7 +413,7 @@ cv::Point2i FDSSTTracker::detect_scale(cv::Mat image)
   cv::Point2i pi;
   double pv;
   cv::minMaxLoc(interp_scale_response, NULL, &pv, NULL, &pi);
-
+  peak_scale_value = pv;
   return pi;
 }
 
@@ -710,7 +733,7 @@ void FDSSTTracker::dsstInit(const cv::Rect &roi, cv::Mat image)
 
   // Guassian peak for scales (after fft)
 
-  // ´¦Àí²åÖµÇ°µÄ³ß¶ÈÐòÁÐ£¬¼´ÐèÒªÌáÈ¡¶à³ß¶ÈÌØÕ÷µÄÒ»×éÖµ
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÇ°ï¿½Ä³ß¶ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½È¡ï¿½ï¿½ß¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Öµ
   cv::Mat colScales =
 	  rangeToColVector<float>(-floor((float)(n_scales - 1) / 2),
 	  ceil((float)(n_scales - 1) / 2), n_scales);
@@ -737,7 +760,7 @@ void FDSSTTracker::dsstInit(const cv::Rect &roi, cv::Mat image)
   scaleFactors = pow<float, float>(scale_step, colScales);
   
 
-  // ´¦Àí²åÖµºóµÄ³ß¶ÈÐòÁÐ
+  // ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Ä³ß¶ï¿½ï¿½ï¿½ï¿½ï¿½
   cv::Mat interp_colScales =
 	  rangeToColVector<float>(-floor((float)(n_interp_scales - 1) / 2),
 	  ceil((float)(n_interp_scales - 1) / 2), n_interp_scales);

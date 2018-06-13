@@ -136,7 +136,7 @@ int detect_track(cv::Mat& raw_img, cv::Rect& result)
                 }
             }
 
-            if ((minDist < 0.4) && (minDist < DBL_MAX) && RedetectPos != -1)
+            if ((minDist < 0.45) && (minDist < DBL_MAX) && RedetectPos != -1)
             {
                 Object object = objects.at(RedetectPos);
 
@@ -145,16 +145,16 @@ int detect_track(cv::Mat& raw_img, cv::Rect& result)
                 cvtColor(raw_img, gray,CV_RGB2GRAY);
                 Tracker_init(result, gray);
 
-                //pre_frame = gray(result);
+                pre_frame = gray(result);
                 flag_detect = 0;
             }
             else
             {
                 Num_notcomp++;
-                if(Num_notfound >= 100)
+                if(Num_notfound >= 30)
                 {
                     Num_notfound = 0;
-                    select_init = true;
+                    //select_init = true;
                 }
             }
 		}
@@ -167,7 +167,7 @@ int detect_track(cv::Mat& raw_img, cv::Rect& result)
         if(g_bRedetection)
         {
             Num_notfound++;
-            if(Num_notfound >= 50)
+            if(Num_notfound >= 30)
             {
                 Num_notfound = 0;
                 flag_detect = 1;
